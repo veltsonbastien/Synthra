@@ -2,6 +2,7 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 
 Circle circle; 
+ArrayList<Circle> circles = new ArrayList<Circle>(); 
 
 Minim minim;
 AudioInput in;
@@ -16,6 +17,7 @@ void setup()
 
   in = minim.getLineIn(Minim.MONO, 4096, 44100);
   fft = new FFT(in.left.size(), 44100);
+  
 }
 
  float ellipseY = 400; 
@@ -27,32 +29,40 @@ void draw()
 {
   background(0);
   stroke(255);
-
+  textSize(150); 
+  textAlign(CENTER); 
+  text("Synthra",width/2,height/2); 
+  
+  
   fft.forward(in.left);
   for (int n = 0; n < fft.specSize()/10; n++) { 
     println("Current Frequency: "+((fft.getBand(n))*44100) );
-    ellipseY = map(  ((fft.getBand(n))*44100), 0,height, 0, height);
-    colormain = (int)(map( ((fft.getBand(n))*44100), 0, 255, 0, 255)); 
+    ellipseY = map(  ((fft.getBand(n))*44100*2), 0,height, 0, height);
+    colormain = (int)(map( ((fft.getBand(n))*44100), 128, 255, 0, 255)); 
    
     //create a new circle object, and display it with the parameters    
     Circle c = new Circle(ellipseY, 10.0, colormain, color1, color2); 
-    c.display(); 
+    circles.add(c); 
   }
   
-  
-  //println(fft.getFreq(110));
   // draw the waveforms
   for (int i = 0; i < in.bufferSize()/10; i+=5)
   {
     //getting left waves
-    println("Current Left: "+Math.abs((map(in.left.get(i+1)*100000, 0,255,0,255)))); 
+    println("Current Left: "+Math.abs((map(in.left.get(i+1)*100000, 0,128,0,255)))); 
     color1 = (int)( Math.abs(map(in.left.get(i+1)*100000, in.left.get(i+1)*100000,in.left.get(i+1)*1000000,0,255))); 
     //getting right waves
     println("Current Right: "+Math.abs((map(in.right.get(i+1)*100000, 0,255,0,255))));  
-    color2 = (int)(Math.abs(map(in.right.get(i+1)*100000, 0,255,0,255))); 
-  
+    color2 = (int)(Math.abs(map(in.right.get(i+1)*100000, 0,128,0,255))); 
   }//end of for loop  
-}
+  
+  //display the circles
+  for(Circle c: circles){
+   c.display();  
+  }
+  
+  
+}//end of draw 
 
 void stop()
 {
@@ -93,8 +103,9 @@ class Circle{
  }
  
  void display(){
-   fill(colormains, color1s, color2s); 
-   stroke(colormains, color1s, color2s);
+   fill(colormains, color1s, color2s, 30); 
+   //stroke(colormains, color1s, color2s, 80);
+   noStroke(); 
    ellipse(circleX,circleY,radius,radius); 
    animate(); 
  } 
