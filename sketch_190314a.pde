@@ -1,5 +1,6 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import java.util.*; 
 
 Circle circle; 
 ArrayList<Circle> circles = new ArrayList<Circle>(); 
@@ -36,7 +37,7 @@ void draw()
   
   fft.forward(in.left);
   for (int n = 0; n < fft.specSize()/10; n++) { 
-    println("Current Frequency: "+((fft.getBand(n))*44100) );
+    println("Current Frequency: "+((fft.getBand(n))*4410) );
     ellipseY = map(  ((fft.getBand(n))*44100*2), 0,height, 0, height);
     colormain = (int)(map( ((fft.getBand(n))*44100), 128, 255, 0, 255)); 
    
@@ -56,11 +57,21 @@ void draw()
     color2 = (int)(Math.abs(map(in.right.get(i+1)*100000, 0,128,0,255))); 
   }//end of for loop  
   
+  //before we create new circle, check if any have gone out 
+ 
   //display the circles
   for(Circle c: circles){
-   c.display();  
-  }
-  
+//   Iterator itr = circles.iterator(); 
+//        while (itr.hasNext()) 
+//        {  
+//            if (c.circleX > width) 
+//                itr.remove(); 
+//        } 
+//   
+     if(c.circleX < width){
+       c.display();  
+     }
+   }
   
 }//end of draw 
 
@@ -103,7 +114,7 @@ class Circle{
  }
  
  void display(){
-   fill(colormains, color1s, color2s, 30); 
+   fill(colormains, color1s, color2s, 50); 
    //stroke(colormains, color1s, color2s, 80);
    noStroke(); 
    ellipse(circleX,circleY,radius,radius); 
